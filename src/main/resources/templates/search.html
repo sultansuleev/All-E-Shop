@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/main.html">
+
+<div layout:fragment="site_content">
+    <div class="pt-4">
+        <form th:action="@{'/search'}" method="get">
+            <div class="row align-items-end">
+                <div class="col-3">
+                    <label th:text="#{label.itemName}"></label>
+                    <input type="text" class="form-control" th:value="${name}" name="name">
+                </div>
+                <div class="col-2">
+                    <label th:text="#{label.Brand}">
+                    </label>
+                    <select class="form-control" name="brand_id">
+                        <option th:each="brnd:${brands}" th:text="${brnd.name}" th:value="${brnd.id}" th:selected="${brnd.id==oneBrand.id}"></option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <label th:text="#{label.itemPrice}"></label>
+                    <input type="number" class="form-control" name="priceFrom">
+                </div>
+                <div class="col-2">
+                    <label> Price to</label>
+                    <input type="number" class="form-control" name="priceTo">
+                </div>
+                <div class="col-3">
+                    <button type="submit" class="btn btn-primary" th:text="#{label.search}"></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row mt-3">
+        <div class="col-sm-6">
+            <h3>Search Result:</h3>
+        </div>
+        <div class="col-sm-6 ml-auto form-inline">
+            <h6 class="mr-3" style="color:black">Order by price:</h6>
+            <div class="btn-group" role="group" aria-label="">
+                <form th:action="@{'/search'}" method="get">
+                    <input type="hidden" name="order" value="asc">
+                    <input type="hidden" name="name" th:value="${name}">
+                    <input type="hidden" name="brand_id" th:value="${oneBrand.id}">
+                    <input type="hidden" name="priceFrom" th:value="${price_from}">
+                    <input type="hidden" name="priceTo" th:value="${price_to}">
+                    <button class="btn btn-secondary" disabled th:if="${order.equals('asc')}">Ascending</button>
+                    <button class="btn btn-secondary" th:unless="${order.equals('asc')}">Ascending</button>
+                </form>
+                <form th:action="@{'/search'}" method="get">
+                    <input type="hidden" name="order" value="desc">
+                    <input type="hidden" name="name" th:value="${name}">
+                    <input type="hidden" name="brand_id" th:value="${oneBrand.id}">
+                    <input type="hidden" name="priceFrom" th:value="${price_from}">
+                    <input type="hidden" th:class="mr-3" name="priceTo" th:value="${price_to}">
+                    <button class="btn btn-secondary" disabled th:if="${order.equals('desc')}">Descending</button>
+                    <button class="btn btn-secondary"  th:unless="${order.equals('desc')}">Desckending</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-sm-4" th:each="item : ${items}">
+            <div class="card mt-3" style="min-height: 400px;">
+                <div style="height: 100%; overflow: hidden;">
+                    <img th:src="${item.getSmallPicURL()}" class="card-img-top mt-1" style=" width: 100%;"
+                         alt="...">
+                </div>
+                <div class="card-body">
+                    <a th:href="@{'/view/' + ${item.getId()}}"><h5 class="card-title" th:text="${item.getName()}"></h5>
+                    </a>
+                    <h5>$<span th:text="${item.getPrice()}"></span></h5>
+                    <p class="card-text" th:text="${item.getDescription()}"></p>
+                    <form th:action="@{'/search'}" method="get">
+
+                        <h6 class="card-text">BRAND:
+                            <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 14px; font-weight: bold" type="submit" name="brand_id" th:value="${item.brands.id}"
+                                    th:text="${item.brands!=null ? item.brands.name + ', ' + item.brands.country.name : '------'}"></button>
+                        </h6>
+                    </form>
+                </div>
+                <div class="card-footer">
+                            <span class="fa fa-star checked"
+                                  th:each="num: ${#numbers.sequence(1,item.getStars(),1)}"></span>
+                    <span class="fa fa-star" th:each="num: ${#numbers.sequence(item.getStars(),4,1)}"
+                          style=""></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function swap_Desc() {
+            $("#order").attr("action", "/filterDesc");
+        }
+
+        function swap_Asc() {
+            $("#order").attr("action", "/filterAsc");
+        }
+    </script>
+</div>
+</html>

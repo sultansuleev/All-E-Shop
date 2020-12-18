@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/main.html">
+
+<div layout:fragment="site_content">
+
+    <div class="row mt-3">
+        <div class="col-sm-12">
+            <div class="col-6 offset-3 d-flex flex-column" style="font-size: 20px;">
+                <img th:src="@{'/viewphoto/'+${currentUser.getUserAvatar()}}" class="my-3 mx-auto" style="vertical-align: middle; width: 160px; height: 160px; border-radius: 50%;">
+                <form th:action="@{'/uploadavatar'}" method="post" enctype="multipart/form-data">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="customFile" name="user_ava">
+                        <label class="custom-file-label" for="customFile" th:text="#{label.file}"></label>
+                        <button class="btn btn-success mt-2" th:style="'background-color:'+${secondary}+';'" th:text="#{label.upload}"></button>
+                    </div>
+                </form>
+            </div>
+            <form th:action="@{'/saveUserSimple'}" method="post">
+                <input type="hidden" name="id" th:value=" ${user.getId()}">
+                <div class="form-group">
+                    <label th:text="#{label.fullName}"></label>
+                    <input type="text" name="user_full_name" class="form-control" th:value="${user.getFullName()}" required>
+                </div>
+                <div class="form-group">
+                    <label th:text="#{label.email}"></label>
+                    <input type="text" name="user_email" class="form-control" th:value="${user.getEmail()}" disabled>
+                </div>
+                <div class="form-group">
+                    <label th:text="#{label.password}"></label>
+                    <input type="password" name="user_password" class="form-control">
+                </div>
+                <div class="form-group float-right">
+                    <button type="submit" class="btn btn-success" th:style="'background-color:'+${secondary}+';'"><i class="fas fa-save mr-2"></i><span th:text="#{button.save}"></span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/main.html">
+
+<div layout:fragment="site_content">
+    <div class="row">
+        <div class="col-9" th:if="${session.basket.size()==0}">
+            <div class="row">
+                <h3>Empty</h3>
+            </div>
+        </div>
+        <div class="col-9" th:if="${session.basket.size()>0}">
+            <div class="row">
+                <div class="card col-12 my-2 shadow bg-white rounded" th:each="item : ${session.basket}">
+                    <div>
+                        <div class="row no-gutters p-3">
+                            <div class="col-md-4 p-2">
+                                <img th:src="${item.getSmallPicURL()}" alt="" class="card-img-top img-thumbnail">
+                            </div>
+                            <div class="col-md-5">
+                                <div class="card-body" style="height: 70%;">
+                                    <a th:href="@{'/view/'+${item.getId()}}" style="text-decoration: none;">
+                                        <h5 class="card-title font-weight-bold" th:text="${item.getName()}"></h5>
+                                    </a>
+                                    <h5 class="card-text" th:text="${item.getPrice() + ' ₸'}"></h5>
+                                    <h5 class="card-text" th:text="${item.getDescription()}"></h5>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="col-12 d-flex justify-content-around">
+                                    <a th:href="${'/minusItemFromBasket/' + item.id}" class="btn my-auto btn-danger">-</a>
+                                    <h2 th:text="${item.getQuantity()}"></h2>
+                                    <a th:href="${'/order/' + item.id}" class="btn btn-success my-auto">+</a>
+                                </div>
+                                <div class="col-12 p-3 d-flex">
+                                    <a th:href="${'/removeFromBasket/' + item.id}" class="btn my-auto btn-success" th:text="#{button.remove}"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-3 mt-5">
+            <div class="card">
+                <div class="d-flex mb-5">
+                    <h5 class="card-text" th:text="#{label.total}"></h5>
+                    <h5 class="card-text ml-2" th:text="${total} + '₸'"></h5>
+                </div>
+
+                <a th:href="${'/clearBasket'}" class="btn" th:text="#{button.clear}"></a>
+                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exampleModal" th:text="#{button.pay}"></button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:text="#{label.paymentInfo}"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{'/payment'}" method="post" class="form-row">
+                        <div class="col-12">
+                            <label for="fullname" th:text="#{label.fullName}"></label>
+                            <input type="text" class="form-control" id="fullname" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="cardNum" th:text="#{label.cardNum}"></label>
+                            <input type="text" class="form-control" id="cardNum" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="exp" th:text="#{label.expiration}"></label>
+                            <input type="text" class="form-control" id="exp" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="cvv" th:text="#{label.CVV}">CVV</label>
+                            <input type="text" class="form-control" id="cvv" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" th:text="#{button.pay}"></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

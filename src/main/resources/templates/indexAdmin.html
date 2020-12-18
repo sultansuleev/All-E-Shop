@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layoutAdmin/mainAdmin.html">
+
+<div layout:fragment="site_contentAdmin">
+    <link rel="stylesheet" th:href="@{'css/style.css'}">
+
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <button type="button" class="btn btn-secondary float-right mb-3" data-toggle="modal" id="addNew"
+                    data-target="#staticBackdrop" th:text="#{button.addItem}">
+            </button>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th th:text="#{label.itemName}"></th>
+                    <th th:text="#{label.Brand}"></th>
+                    <th th:text="#{label.itemPrice}"></th>
+                    <th width="10%" th:text="#{label.details}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="it: ${items}">
+                    <td th:text="${it.id}"></td>
+                    <td th:text="${it.name}"></td>
+                    <td th:text="${it.brands.name}"></td>
+                    <td th:text="${it.price}"></td>
+                    <td> <a th:href="@{'/editItem/' + ${it.id}}" class="btn btn-info btn-sm"><i class="fas fa-info-circle"></i></a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--    </div>-->
+    <form th:action="@{'/addItem'}" method="post">
+        <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel" th:text="#{label.newItem}"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label th:text="#{label.itemName}"></label>
+                            <input type="text" name="item_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.itemDescription}"></label>
+                            <textarea class="form-control" rows="5" name="item_description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.itemPrice}"></label>
+                            <input type="number" name="item_price" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.addedDate}"></label>
+                            <input type="date" name="item_date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.itemStar}"></label>
+                            <input type="number" name="item_star" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.itemSmallPicture}"></label>
+                            <input type="text" name="item_smallPic" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.itemLargePicture}"></label>
+                            <input type="text" name="item_largePic" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.Brand}">
+                            </label>
+                            <select class="form-control" name="brand_id">
+                                <option th:each="brnd:${brands}" th:text="${brnd.name}" th:value="${brnd.id}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.inTop}">
+                            </label>
+                            <select class="form-control" name="top_page">
+                                <option th:selected="1">YES</option>
+                                <option th:selected="0">NO</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.categories}">
+                            </label>
+                            <select class="form-control" name="category_id">
+                                <option th:each="ct:${categories}" th:text="${ct.name}" th:value="${ct.id}"></option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                th:text="#{button.close}"></button>
+                        <button type="submit" class="btn btn-primary" th:text="#{button.add}"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+</html>

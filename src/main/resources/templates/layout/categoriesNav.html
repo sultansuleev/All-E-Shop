@@ -1,0 +1,9 @@
+<ul class="list-group" style="width: 255px;color: #005cbf" xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://ultraq.net.nz/thymeleaf/layout">
+    <li class="list-group-item" style="background-color: #156145"><a href="#" style="font-weight: bold;color: white" th:text="#{label.categories}"></a></li>
+    <li class="list-group-item" style="color: black"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;<a th:href="@{'/allItems'}"  style="font-weight: bold;color: black"  th:text="#{link.items}"></a></li>
+    <li class="list-group-item" style="color: black"><i class="fas fa-mobile-alt"></i>&nbsp;&nbsp;<a href="#" style="font-weight: bold;color: black"  th:text="#{link.phones}"></a></li>
+    <li class="list-group-item" style="color: black"><i class="fas fa-tv"></i>&nbsp;&nbsp;<a href="#" style="font-weight: bold;color: black"  th:text="#{link.tv}"> </a></li>
+    <li class="list-group-item" style="color: black"><i class="fas fa-gamepad"></i>&nbsp;&nbsp;<a href="#" style="font-weight: bold;color: black"  th:text="#{link.game}"></a></li>
+    <li class="list-group-item" style="color: black"><i class="fas fa-luggage-cart"></i>&nbsp;&nbsp;<a href="#" style="font-weight: bold;color: black"  th:text="#{link.other}"></a></li>
+</ul>

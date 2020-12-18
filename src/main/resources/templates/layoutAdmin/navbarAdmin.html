@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #343A40" xmlns:th="http://www.thymeleaf.org">
+    <div class="container">
+        <a class="navbar-brand d-flex flex-row align-items-center justify-content-between" th:href="@{'/admin'}"><i class="fab fa-jedi-order fa-2x mr-2"></i>  ALL E-SHOP</a>
+        <p class="navbar-text m-auto" th:text="#{label.adminPanel}"></p>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse"  id="navbarSupportedContent ">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="?lng=en">ENG</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?lng=ru">RUS</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?lng=kz">KAZ</a>
+                </li>
+            </ul>
+
+            <a th:href="@{'/'}"><button class="btn btn-primary my-2 my-sm-0" type="submit" style="color: #ffffff" th:text="#{label.adminPanelOut}"></button></a>
+
+        </div>
+    </div>
+</nav>

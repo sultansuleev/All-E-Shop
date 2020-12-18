@@ -1,0 +1,114 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/main.html">
+<div layout:fragment="site_content">
+    <div>
+        <form  th:action="@{'/searchItem'}" method="get">
+            <input type="search" name="search" style="width: 540px" th:placeholder="#{label.search}">
+            <button class="btn btn-sm mb-1 ml-2" style="background-color: rgba(9,92,18,0.96);color: white;width: 100px" th:text="#{button.search}"></button>
+        </form>
+    </div>
+    <div class="card">
+        <img th:src="${item.largePicURL}" class="card-img-top mt-1" style=" width: 100%;"
+             alt="...">
+        <div class="card-body">
+            <a th:href="@{'/'}"><h5 class="card-title" th:text="${item.getName()}"></h5></a>
+            <h5>$<span th:text="${item.getPrice()}"></span></h5>
+            <p class="card-text" th:text="${item.getDescription()}"></p>
+            <p th:text = "${(item.country&&item.brands)!=null? item.brands.name + ', ' + item.country.name : '-------'}"></p>
+            <p><button type="button" class="btn btn-success" data-toggle="modal" data-target="#editModal">
+                EDIT
+            </button>
+            </p>
+        </div>
+        <div class="card-footer">
+                            <span style="color: rgba(246,225,45,0.96) " class="fa fa-star"
+                                  th:each="num: ${#numbers.sequence(1,item.getStars(),1)}"></span>
+            <span class="fa fa-star" th:each="num: ${#numbers.sequence(item.getStars(),4,1)}"
+                  style=""></span>
+        </div>
+
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">EDIT</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form th:action="@{'/saveItem'}" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" th:value="${item.getId()}">
+                            <div class="form-group">
+                                <label th:text="#{label.itemName}"></label>
+                                <input type="text" name="item_name" class="form-control" th:value="${item.getName()}">
+                            </div>
+                            <div class="form-group">
+                                <label th:text="#{label.itemDescription}"></label>
+                                <textarea class="form-control" rows="5" name="item_description" th:text="${item.getDescription()}"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label th:text="#{label.itemPrice}"></label>
+                                <input type="number" name="item_price" class="form-control" th:value="${item.getPrice()}">
+                                <!--                            <label style="font-size: 12px; color: #8c8685">year-month-date</label>-->
+                            </div>
+                            <div class="form-group">
+                                <label th:text="#{label.itemStar}"></label>
+                                <input type="number" name="item_star" class="form-control" th:value="${item.getStars()}">
+                            </div>
+                            <div class="form-group">
+                                <label th:text="#{label.itemsmallPicture}"></label>
+                                <input type="text" name="item_small_picture" class="form-control" th:value="${item.getSmallPicURL()}">
+                            </div>
+                            <div class="form-group">
+                                <label th:text="#{label.largePicture}"></label>
+                                <input type="text" name="item_large_picture" class="form-control" th:value="${item.getLargePicURL()}">
+                            </div>
+                            <div class="form-group">
+                                <label th:text="#{label.addedDate}"></label>
+                                <input type="date" name="added_date" class="form-control" th:value="${item.getAddedDate()}">
+                            </div>
+                            <div class="form-group">
+                                <label th:text="#{label.country}"></label>
+                                <select name="country_id" class="form-control">
+                                    <option th:each="brn: ${brands}" th:text="${brn.getCountry().name} + ' / ' + ${brn.getCountry().code}" th:value="${brn.getCountry().id}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label th:text="#{label.brands}"></label>
+                                <select name="brand_id" class="form-control">
+                                    <option th:each="brn: ${brands}" th:text="${brn.name}" th:value="${brn.id}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label th:text="#{label.top}"></label>
+                                <select class="form-control" name="top_page">
+                                    <option value="1" th:text="#{label.top_yes}" th:selected="${item.isInTopPage()==true}"></option>
+                                    <option value="0" th:text="#{label.top_no}" th:selected="${item.isInTopPage()==false}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success" th:text="#{button.save}"></button>
+                            <button type="button" onclick="deleteBlog()" class="btn btn-danger" th:text="#{button.delete}"></button>
+                        </div>
+                    </form>
+
+                    <form th:action="@{'/deleteItem'}" method="post" id = "deleteBlogFormId">
+                        <input type="hidden" name="id" th:value="${item.getId()}">
+                    </form>
+
+                    <script type="text/javascript">
+                        function deleteBlog() {
+                            conf = confirm("Are you sure?");
+                            if(conf){
+                                document.getElementById("deleteBlogFormId").submit();
+                            }
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

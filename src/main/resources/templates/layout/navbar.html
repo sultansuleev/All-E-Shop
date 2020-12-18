@@ -1,0 +1,45 @@
+<nav class="navbar navbar-expand-lg navbar-dark" th:style="'background-color:'+${primaris}+';'" xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="container">
+        <a th:href="@{/}" class="navbar-brand d-flex flex-row align-items-center justify-content-between"><i class="fab fa-jedi-order fa-2x mr-2"></i> ALL E-SHOP</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="navbar-nav">
+            <li class="nav-item" sec:authorize="isAnonymous()">
+                <a class="nav-link" th:href="@{'/login'}" th:text="#{label.login}"></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{'/profile'}" sec:authorize="isAuthenticated()" th:text="${currentUser.fullName}"></a>
+            </li>
+            <li class="nav-item" sec:authorize="isAnonymous()">
+                <a class="nav-link" th:href="@{'/register'}" th:text="#{label.singUp}"></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{'/addItem'}" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')" th:text="#{button.addItem}"></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" th:href="${'/basket'}" th:text="#{label.basket}"></a>
+            </li>
+
+            <li class="nav-item" sec:authorize="isAuthenticated()">
+                <a class="nav-link" href="JavaScript:void(0)" onclick="document.getElementById('logoutFormId').submit()" th:text="#{button.logout}"></a>
+            </li>
+            <form th:action="@{'/logout'}" method="post" id="logoutFormId" sec:authorize="isAuthenticated()">
+            </form>
+        </ul>
+
+        <div class="collapse navbar-collapse d-flex" id="navbarSupportedContent" style="justify-content: flex-end;">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a href="?lng=en" class="nav-link">ENG</a></li>
+                <li class="nav-item"><a href="?lng=ru" class="nav-link">RUS</a></li>
+                <li class="nav-item"><a href="?lng=kz" class="nav-link">KAZ</a></li>
+            </ul>
+        </div>
+
+        <a th:href="@{'/admin'}" sec:authorize="hasRole('ROLE_ADMIN')"><button class="btn btn-primary my-2 my-sm-0" type="submit" style="color: #ffffff" th:text="#{label.adminPanel}"></button></a>
+    </div>
+</nav>

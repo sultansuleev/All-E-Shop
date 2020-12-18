@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layoutAdmin/mainAdmin.html">
+
+<div layout:fragment="site_contentAdmin">
+
+    <div class="card">
+        <div class="card-body">
+            <a th:href="@{'/editUsers/' + ${user.getId()}}"><h5 class="card-title" th:text="${user.getFullName()}"></h5></a>
+            <p class="card-text" th:text="${user.getEmail()}"></p>
+            <p class="card-text" th:text="${user.getPassword()}"></p>
+            <p class="card-text" th:text="${user.getRoles()}"></p>
+        </div>
+    </div>
+</div>
+</html>

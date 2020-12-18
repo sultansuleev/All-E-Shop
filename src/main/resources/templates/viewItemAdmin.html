@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layoutAdmin/mainAdmin.html">
+
+<div layout:fragment="site_contentAdmin">
+
+    <div class="card">
+        <img th:src="${item.getLargePicURL()}" style="max-width: 100%; height: 450px" class="card-img-top" alt="...">
+        <div class="card-body">
+            <a th:href="@{'/details/' + ${item.getId()}}"><h5 class="card-title" th:text="${item.getName()}"></h5></a>
+            <h5>$<span th:text="${item.getPrice()}"></span></h5>
+            <p class="card-text" th:text="${item.getDescription()}"></p>
+
+            <h6 class="card-text">BRAND:
+                <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 14px; font-weight: bold" type="button" name="brand_id" th:value="${item.brands.id}"
+                        th:text="${item.brands!=null ? item.brands.name + ', ' + item.brands.country.name : '------'}"></button>
+            </h6>
+        </div>
+        <div class="card-footer">
+                            <span style="color: rgba(246,225,45,0.96) " class="fa fa-star"
+                                  th:each="num: ${#numbers.sequence(1,item.getStars(),1)}"></span>
+            <span class="fa fa-star" th:each="num: ${#numbers.sequence(item.getStars(),4,1)}"
+                  style=""></span>
+        </div>
+    </div>
+</div>
+</html>

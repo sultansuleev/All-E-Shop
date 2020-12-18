@@ -1,0 +1,36 @@
+img{
+max-width: 100%;
+}
+img.thumbnail {
+    width: 100px;
+    height: 70px;
+}
+
+.checked{
+    color: orange;
+}
+a:link{
+    cursor: pointer;
+    text-decoration: none!important;
+}
+a:hover{
+    text-decoration: none;
+}
+
+.pseudo-slider {
+    position: relative;
+    float: left;
+    width: 100%;
+}
+
+.pseudo-text {
+    position: absolute;
+    right: 15%;
+    bottom: 45%;
+    left: 15%;
+    z-index: 10;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    color: #fff;
+    text-align: center;
+}
