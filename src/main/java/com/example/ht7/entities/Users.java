@@ -31,5 +31,5 @@ public class Users {
     private String userAvatar;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Roles> roles;
+    List<Roles> roles;
 }

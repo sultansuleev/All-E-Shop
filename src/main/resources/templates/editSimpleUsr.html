@@ -12,7 +12,7 @@
                     <div class="custom-file">
                         <input type="file" class="custom-file-input" id="customFile" name="user_ava">
                         <label class="custom-file-label" for="customFile" th:text="#{label.file}"></label>
-                        <button class="btn btn-success mt-2" th:style="'background-color:'+${secondary}+';'" th:text="#{label.upload}"></button>
+                        <button class="btn mt-2" th:style="'background-color:'+${secondary}+'; border-color: ' +${secondary}+  '; color: white; width: 100%'" th:text="#{label.upload}"></button>
                     </div>
                 </form>
             </div>

@@ -15,26 +15,26 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart addCart(Cart cart) {
-        return null;
+        return cartRepository.save(cart);
     }
 
     @Override
     public List<Cart> getCarts() {
-        return null;
+        return cartRepository.findAll();
     }
 
     @Override
     public Cart getCart(Long id) {
-        return null;
+        return cartRepository.getOne(id);
     }
 
     @Override
     public void deleteCart(Cart cart) {
-
+        cartRepository.delete(cart);
     }
 
     @Override
     public Cart saveCart(Cart cart) {
-        return null;
+        return cartRepository.save(cart);
     }
 }

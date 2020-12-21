@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "carts")
@@ -21,4 +22,17 @@ public class Cart {
     @Column(name = "paid_date")
     private LocalDateTime paid_date;
 
+    @Column(name = "cust")
+    private String customer;
+
+    @Column(name = "amount")
+    private int amount;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private ShopItems items;
+
+    public Cart(int i, ShopItems item) {
+        this.setAmount(i);
+        this.setItems(item);
+    }
 }

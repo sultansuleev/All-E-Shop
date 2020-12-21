@@ -5,7 +5,7 @@
 <div layout:fragment="site_content">
     <div class="row mt-5">
         <div class="col-12">
-            <h1 class="display-3 text-center d-flex flex-column justify-content-center">
+            <h1 class="display-5 text-center d-flex flex-column justify-content-center">
                 <img th:src="@{'/viewphoto/'+${currentUser.getUserAvatar()}}" class="my-3 mx-auto" style="vertical-align: middle; width: 160px; height: 160px; border-radius: 50%; margin: auto;">
                 <label th:text="#{label.welcomeText}"></label> <span th:text="${currentUser.fullName}"></span>
 

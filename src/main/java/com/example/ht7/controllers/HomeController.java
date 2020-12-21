@@ -1,5 +1,6 @@
 package com.example.ht7.controllers;
 
+import com.example.ht7.DB.ShopItem;
 import com.example.ht7.entities.*;
 import com.example.ht7.services.CartService;
 import com.example.ht7.services.SoldItemsService;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -129,7 +131,6 @@ public class HomeController {
         item.setLargePicURL(lg_picture);
         item.setAddedDate(added_date);
         item.setBrands(brn);
-        item.setQuantity(10);
         item.setInTopPage(top);
         itemService.saveItem(item);
 
@@ -171,6 +172,7 @@ public class HomeController {
 
         List<Comment> comments = itemService.getAllCommentsByItem(items);
         model.addAttribute("comments", comments);
+
 
         model.addAttribute("primaris", primColor);
         model.addAttribute("secondary", secondary);
@@ -233,6 +235,9 @@ public class HomeController {
         model.addAttribute("countries", countryList);
         model.addAttribute("categories", categoriesList);
         model.addAttribute("categoriesWithout", categoriesList3);
+
+        List<Picture> pictures = itemService.getAllPictures(item);
+        model.addAttribute("pictures", pictures);
 
         model.addAttribute("currentUser", getUserData());
         model.addAttribute("primaris", primColor);
@@ -524,24 +529,36 @@ public class HomeController {
     }
 
     @GetMapping(value = "/admin")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public String indexAdmin(Model model) {
         ArrayList<ShopItems> items = (ArrayList<ShopItems>) itemService.getAllItems();
 
         List<Brands> brandsList = itemService.getAllBrands();
         List<Countries> countriesList = itemService.getAllCountries();
         List<Categories> categoriesList = itemService.getAllCategories();
+        boolean hasRole = false;
+        for (Roles r : getUserData().getRoles()) {
+            if (r.getRole().equals("ROLE_ADMIN") || r.getRole().equals("ROLE_MODERATOR")) {
+                hasRole = true;
+            }
+        }
         model.addAttribute("brands", brandsList);
         model.addAttribute("categories", categoriesList);
         model.addAttribute("countries", countriesList);
-        model.addAttribute("items", items);
         model.addAttribute("currentUser", getUserData());
         model.addAttribute("primaris", primColor);
         model.addAttribute("secondary", secondary);
-        return "indexAdmin";
+        if (hasRole) {
+            model.addAttribute("items", items);
+            return "indexAdmin";
+        } else {
+            return "403";
+        }
+
     }
 
     @GetMapping(value = "/categories")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     public String getCategories(Model model) {
         List<Categories> categoriesList = itemService.getAllCategories();
         model.addAttribute("categories", categoriesList);
@@ -563,6 +580,7 @@ public class HomeController {
     }
 
     @GetMapping(value = "/countries")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     public String getCountries(Model model) {
         List<Countries> countriesList = itemService.getAllCountries();
         model.addAttribute("countries", countriesList);
@@ -838,7 +856,8 @@ public class HomeController {
     }
 
     @PostMapping(value = "/register")
-    public String toRegister(@RequestParam(name = "user_email") String email,
+    public String toRegister(Model model,
+                             @RequestParam(name = "user_email") String email,
                              @RequestParam(name = "user_password") String password,
                              @RequestParam(name = "re_user_password") String rePassword,
                              @RequestParam(name = "user_full_name") String fullName
@@ -852,7 +871,6 @@ public class HomeController {
                 return "redirect:/register?success";
             }
         }
-
         return "redirect:/register?error";
     }
 
@@ -919,14 +937,17 @@ public class HomeController {
     public String editUsersSimple(Model model,
                                   @PathVariable(name = "idshka") Long id) {
         Users user = userService.getUserById(id);
-        if (user.getEmail().equals(getUserData().getEmail())) {
-            model.addAttribute("user", user);
-            model.addAttribute("currentUser", getUserData());
-            model.addAttribute("primaris", primColor);
-            model.addAttribute("secondary", secondary);
-            return "editSimpleUsr";
+        model.addAttribute("currentUser", getUserData());
+        model.addAttribute("primaris", primColor);
+        model.addAttribute("secondary", secondary);
+        if (user != null) {
+            if (user.getId().equals(getUserData().getId())) {
+                model.addAttribute("user", user);
+                return "editSimpleUsr";
+            }
+            return "403";
         }
-        return null;
+        return "404";
     }
 
     @GetMapping(value = "/viewUsr/{idshka}")
@@ -985,7 +1006,7 @@ public class HomeController {
         Users user = userService.getUserById(id);
 
         if (user != null) {
-            if (password != null) {
+            if (password != null && password.equals(null) && password.equals(" ") && password.equals("")) {
                 user.setPassword(bCryptPasswordEncoder.encode(password));
             }
             user.setFullName(fullName);
@@ -999,9 +1020,12 @@ public class HomeController {
     public String deleteUser(@RequestParam(name = "id") Long id) {
         Users user = userService.getUserById(id);
         if (user != null) {
-            userService.deleteUser(user);
+            if (!getUserData().getId().equals(user.getId())) {
+                userService.deleteUser(user);
+                return "redirect:/manageUsers?success";
+            }
         }
-        return "redirect:/manageUsers";
+        return "redirect:/manageUsers?error";
     }
 
     @GetMapping(value = "/roles")
@@ -1076,23 +1100,24 @@ public class HomeController {
                 currentUser.setUserAvatar(picName);
 
                 userService.saveUser(currentUser);
-                return "redirect:/profile?success";
+                return "redirect:/profile";
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        return "redirect:/";
+        return "redirect:/profile";
     }
 
     @GetMapping(value = "/viewphoto/{url}", produces = {MediaType.IMAGE_JPEG_VALUE})
-    @PreAuthorize("isAuthenticated()")
     public @ResponseBody
     byte[] viewProfilePhoto(@PathVariable(name = "url") String url) throws IOException {
         String pictureURL = viewPath + defaultPicture;
 
-        if (url != null && !url.equals("null")) {
+        if (url != null && !url.equals("null") && !url.equals(null)) {
             pictureURL = viewPath + url + ".jpg";
+        } else {
+            pictureURL = viewPath + defaultPicture;
         }
 
         InputStream in;
@@ -1153,7 +1178,7 @@ public class HomeController {
             }
         }
 
-        return "redirect:/view/" + id;
+        return "redirect:/editItem/" + id;
     }
 
     @PostMapping("/removePhoto")
@@ -1163,7 +1188,7 @@ public class HomeController {
         Picture picture = itemService.getPicture(id);
         itemService.deletePicture(picture);
 
-        return "redirect:/view/" + item_id;
+        return "redirect:/editItem/" + item_id;
     }
 
     @PostMapping(value = "order")
@@ -1181,32 +1206,72 @@ public class HomeController {
 
     @GetMapping(value = "/basket")
     public String basket(Model model, HttpSession session) {
-        if (session.getAttribute("basket") == null) {
-            List<ShopItems> basket = new ArrayList<>();
-            session.setAttribute("basket", basket);
-            model.addAttribute("total", "0,00");
-        } else {
-            List<ShopItems> basket = (List<ShopItems>) session.getAttribute("basket");
-            Double total = 0.0;
-            for (ShopItems it : basket) {
-                for (Integer i = 0; i < it.getQuantity(); i++) {
-                    total = total + it.getPrice();
+        ArrayList<Cart> cart = (ArrayList<Cart>) session.getAttribute("basket");
+        List<ShopItems> items = new ArrayList<>();
+
+        if (cart == null) {
+            cart = new ArrayList<>();
+        }
+
+
+        if (cart != null) {
+            for (int i = 0; i < cart.size(); i++) {
+                if (cart.get(i).getAmount() == 0) {
+                    cart.remove(i);
                 }
             }
-            model.addAttribute("total", total);
         }
-        model.addAttribute("currentUser", getUserData());
+
+        model.addAttribute("basket", cart);
+        int max = 0;
+        if (cart != null) {
+            for (Cart c : cart) {
+                max += (c.getItems().getPrice() * c.getAmount());
+                items.add(c.getItems());
+            }
+        }
+        model.addAttribute("total", max);
+        List<Categories> categoriesList = itemService.getAllCategories();
+        model.addAttribute("categories", categoriesList);
+        List<Brands> brandsList = itemService.getAllBrands();
+        model.addAttribute("brands", brandsList);
+        List<Countries> countryList = itemService.getAllCountries();
+        model.addAttribute("countries", countryList);
         model.addAttribute("primaris", primColor);
         model.addAttribute("secondary", secondary);
+        model.addAttribute("currentUser", getUserData());
+        System.out.println(cart.size());
         return "basket";
     }
 
     @GetMapping(value = "/order/{id}")
     public String buy(@PathVariable("id") Long id) {
+        ShopItems item = itemService.getItem(id);
+        ArrayList<Cart> cart = (ArrayList<Cart>) session.getAttribute("basket");
+        if (cart != null) {
+            boolean has = false;
+            for (Cart c : cart) {
+                if (c.getItems().getId().equals(item.getId())) {
+                    has = true;
+                    int am = c.getAmount();
+                    c.setAmount(am += 1);
+                }
+            }
+            if (has == false) {
+                cart.add(new Cart(1, item));
+            }
+            session.setAttribute("basket", cart);
+        } else {
+            cart = new ArrayList<>();
+            cart.add(new Cart(1, item));
+            session.setAttribute("basket", cart);
+        }
+        /*
         if (session.getAttribute("basket") == null) {
-            List<ShopItems> basket = new ArrayList<>();
+            List<Cart> basket = new ArrayList<>();
             ShopItems item = itemService.getItem(id);
             item.setQuantity(1);
+            basket.
             basket.add(item);
             session.setAttribute("basket", basket);
         } else {
@@ -1222,7 +1287,7 @@ public class HomeController {
             }
             session.setAttribute("basket", basket);
         }
-
+        */
 
         return "redirect:/basket";
     }
@@ -1239,73 +1304,74 @@ public class HomeController {
 
     @RequestMapping(value = "/clearBasket", method = RequestMethod.GET)
     public String clearBasket() {
-        List<ShopItems> basket = new ArrayList<>();
+        List<Cart> basket = new ArrayList<>();
         session.setAttribute("basket", basket);
         return "redirect:/basket";
     }
 
     @RequestMapping(value = "/removeFromBasket/{id}", method = RequestMethod.GET)
     public String remove(@PathVariable("id") Long id) {
-        List<ShopItems> basket = (List<ShopItems>) session.getAttribute("basket");
-        int index = this.exists(id, basket);
+        ArrayList<Cart> basket = (ArrayList<Cart>) session.getAttribute("basket");
+        System.out.println("UTILI " + basket);
+        for (Cart c : basket) {
+            if (c.getItems().getId().equals(id)) {
+                c.setItems(null);
+                c.setAmount(0);
+            }
+        }
 
-        basket.remove(index);
+        session.setAttribute("basket", basket);
+        return "redirect:/basket";
+    }
+
+    @RequestMapping(value = "/plusItemFromBasket/{id}", method = RequestMethod.GET)
+    public String increase(@PathVariable("id") Long id) {
+        ArrayList<Cart> basket = (ArrayList<Cart>) session.getAttribute("basket");
+        for (Cart c : basket) {
+            if (c.getItems().getId().equals(id)) {
+                c.setAmount(c.getAmount() + 1);
+            }
+        }
         session.setAttribute("basket", basket);
         return "redirect:/basket";
     }
 
     @RequestMapping(value = "/minusItemFromBasket/{id}", method = RequestMethod.GET)
     public String decrease(@PathVariable("id") Long id) {
-        List<ShopItems> basket = (List<ShopItems>) session.getAttribute("basket");
-        int index = this.exists(id, basket);
-
-        if (basket.get(index).getQuantity() != 1) {
-            Integer quantity = basket.get(index).getQuantity();
-            basket.get(index).setQuantity(quantity - 1);
-        } else {
-            basket.remove(index);
+        ArrayList<Cart> basket = (ArrayList<Cart>) session.getAttribute("basket");
+        for (Cart c : basket) {
+            if (c.getItems().getId().equals(id)) {
+                if (c.getAmount() > 0) {
+                    c.setAmount(c.getAmount() - 1);
+                } else  {
+                    basket.remove(c);
+                }
+            }
         }
+        System.out.println("IMPER " + basket);
         session.setAttribute("basket", basket);
         return "redirect:/basket";
     }
 
     @PostMapping(value = "/payment")
-    public String payment(Model model) {
-        List<ShopItems> basket = (List<ShopItems>) session.getAttribute("basket");
-        Cart payment = new Cart();
-        payment.setPaid_date(LocalDateTime.now());
-        cartService.addCart(payment);
+    public String payment(Model model,
+                          @RequestParam(name = "full_name") String full_name,
+                          @RequestParam(name = "card") String card,
+                          @RequestParam(name = "expiration") String expiration,
+                          @RequestParam(name = "cvv") String cvv
+                          ) {
+        ArrayList<Cart> basket = (ArrayList<Cart>) session.getAttribute("basket");
 
-        Long index = Long.valueOf(cartService.getCarts().size());
-
-        for (ShopItems it : basket) {
-            SoldItems soldItem = new SoldItems();
-            soldItem.setItem(it);
-            soldItem.setQuantity(it.getQuantity());
-            soldItem.setCart(index);
-            soldItemsService.addItem(soldItem);
+        for (Cart c : basket) {
+            c.setPaid_date(LocalDateTime.now());
+            c.setCustomer(full_name);
+            cartService.addCart(c);
         }
+        System.out.println("PAYMENT");
+        basket.clear();
+        session.setAttribute("basket", basket);
 
-        return "redirect:/clearBasket";
-    }
-
-    @GetMapping(value = "/basket/{id}")
-    public String basket(Model model, @PathVariable("id") Long id) {
-        List<SoldItems> basket = soldItemsService.getItemsByCart(id);
-        List<ShopItems> items = new ArrayList<>();
-
-        for (SoldItems s : basket) {
-            ShopItems item = new ShopItems();
-            item = s.getItem();
-            item.setQuantity(s.getQuantity());
-            items.add(item);
-        }
-
-        model.addAttribute("basket", items);
-        model.addAttribute("currentUser", getUserData());
-        model.addAttribute("primaris", primColor);
-        model.addAttribute("secondary", secondary);
-        return "sold";
+        return "redirect:/basket";
     }
 
     @PostMapping(value = "/addComment")
@@ -1359,6 +1425,19 @@ public class HomeController {
         return "redirect:/view/" + item_id;
     }
 
+
+    @GetMapping(value = "/transactions")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
+    public String transactions(Model model) {
+        List<Cart> carts = cartService.getCarts();
+        List<ShopItems> items = itemService.getAllItems();
+        model.addAttribute("carts", carts);
+        model.addAttribute("items", items);
+        model.addAttribute("currentUser", getUserData());
+        model.addAttribute("primaris", primColor);
+        model.addAttribute("secondary", secondary);
+        return "ordersAdmin";
+    }
 
 }
 

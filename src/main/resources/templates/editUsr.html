@@ -9,16 +9,16 @@
             <form th:action="@{'/saveUser'}" method="post">
                 <input type="hidden" name="id" th:value=" ${user.getId()}">
                 <div class="form-group">
-                    <label>Full name</label>
-                    <input type="text" name="user_full_name" class="form-control" th:value="${user.getFullName()}" required>
+                    <label th:text="#{label.fullName }"></label>
+                    <input type="text" name="user_full_name" class="form-control" th:value="${user.getFullName()}">
                 </div>
                 <div class="form-group">
-                    <label>Email</label>
+                    <label th:text="#{label.email}"></label>
                     <input type="text" name="user_email" class="form-control" th:value="${user.getEmail()}" disabled>
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="user_password" class="form-control" th:value="${user.getPassword()}" required>
+                    <label th:text="#{label.password}"></label>
+                    <input type="password" name="user_password" class="form-control">
                 </div>
                 <div class="form-group float-right">
                     <button type="submit" class="btn btn-success" ><i class="fas fa-save mr-2"></i><span th:text="#{button.save}"></span></button>
@@ -55,7 +55,7 @@
 
     <div class="row mt-5">
         <div class="col-12">
-            <h4>Roles</h4>
+            <h4 th:text="#{label.Roles}"></h4>
         </div>
     </div>
     <div class="row mt-2">

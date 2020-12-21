@@ -17,6 +17,17 @@ a:hover{
     text-decoration: none;
 }
 
+.custom-card {
+    transition: .3s ease-in;
+    z-index: 9999;
+}
+
+.custom-card:hover {
+    transition: .3s ease-in;
+    transform: scale(1.05);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+
 .pseudo-slider {
     position: relative;
     float: left;

@@ -11,7 +11,7 @@
             <h5>$<span th:text="${item.getPrice()}"></span></h5>
             <p class="card-text" th:text="${item.getDescription()}"></p>
 
-            <h6 class="card-text">BRAND:
+            <h6 class="card-text" th:text="#{label.Brand}">
                 <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 14px; font-weight: bold" type="button" name="brand_id" th:value="${item.brands.id}"
                         th:text="${item.brands!=null ? item.brands.name + ', ' + item.brands.country.name : '------'}"></button>
             </h6>

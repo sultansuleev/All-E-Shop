@@ -43,9 +43,6 @@ public class ShopItems {
     @Column(name = "inTopPage")
     private boolean inTopPage;
 
-    @Column(name = "quantity")
-    private Integer quantity;
-
     @ManyToOne(fetch = FetchType.EAGER)
     private Brands brands;
 

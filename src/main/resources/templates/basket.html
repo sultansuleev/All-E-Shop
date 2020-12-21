@@ -4,36 +4,36 @@
 
 <div layout:fragment="site_content">
     <div class="row">
-        <div class="col-9" th:if="${session.basket.size()==0}">
+        <div class="col-9" th:if="${basket.size()==0}">
             <div class="row">
-                <h3>Empty</h3>
+                <h3 th:text="#{label.empty}"></h3>
             </div>
         </div>
-        <div class="col-9" th:if="${session.basket.size()>0}">
+        <div class="col-9" th:if="${basket.size()>0}">
             <div class="row">
-                <div class="card col-12 my-2 shadow bg-white rounded" th:each="item : ${session.basket}">
+                <div class="card col-12 my-2 shadow bg-white rounded" th:each="item : ${basket}">
                     <div>
                         <div class="row no-gutters p-3">
                             <div class="col-md-4 p-2">
-                                <img th:src="${item.getSmallPicURL()}" alt="" class="card-img-top img-thumbnail">
+                                <img th:src="${item != null ? item.getItems().getSmallPicURL() : ''}" alt="" class="card-img-top img-thumbnail">
                             </div>
                             <div class="col-md-5">
                                 <div class="card-body" style="height: 70%;">
-                                    <a th:href="@{'/view/'+${item.getId()}}" style="text-decoration: none;">
-                                        <h5 class="card-title font-weight-bold" th:text="${item.getName()}"></h5>
+                                    <a th:href="@{'/view/'+${item.getItems().getId()}}" style="text-decoration: none;">
+                                        <h5 class="card-title font-weight-bold" th:text="${item.getItems().getName()}"></h5>
                                     </a>
-                                    <h5 class="card-text" th:text="${item.getPrice() + ' ₸'}"></h5>
-                                    <h5 class="card-text" th:text="${item.getDescription()}"></h5>
+                                    <h5 class="card-text" th:text="${item != null ? (item.getItems().getPrice() + ' ₸') : ''}"></h5>
+                                    <h5 class="card-text" th:text="${item != null ? item.getItems().getDescription() : ''}"></h5>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="col-12 d-flex justify-content-around">
-                                    <a th:href="${'/minusItemFromBasket/' + item.id}" class="btn my-auto btn-danger">-</a>
-                                    <h2 th:text="${item.getQuantity()}"></h2>
-                                    <a th:href="${'/order/' + item.id}" class="btn btn-success my-auto">+</a>
+                                    <a th:href="${'/minusItemFromBasket/' + item.getItems().id}" class="btn my-auto btn-danger" th:style="'background-color:'+${secondary}+'; border-color: ' +${secondary}+  '; color: white;'">-</a>
+                                    <h2 th:text="${item.getAmount()}"></h2>
+                                    <a th:href="${'/plusItemFromBasket/' + item.getItems().id}" class="btn btn-success my-auto" th:style="'background-color:'+${secondary}+'; border-color: ' +${secondary}+  '; color: white;'">+</a>
                                 </div>
                                 <div class="col-12 p-3 d-flex">
-                                    <a th:href="${'/removeFromBasket/' + item.id}" class="btn my-auto btn-success" th:text="#{button.remove}"></a>
+                                    <a th:href="${'/removeFromBasket/' + item.getItems().id}" class="btn my-auto btn-success" th:text="#{button.remove}" th:style="'background-color:'+${secondary}+'; border-color: ' +${secondary}+  '; color: white; width: 100%'"></a>
                                 </div>
                             </div>
                         </div>
@@ -43,13 +43,14 @@
         </div>
         <div class="col-3 mt-5">
             <div class="card">
-                <div class="d-flex mb-5">
+                <div class="d-flex pt-3 justify-content-center mb-2">
                     <h5 class="card-text" th:text="#{label.total}"></h5>
                     <h5 class="card-text ml-2" th:text="${total} + '₸'"></h5>
                 </div>
 
+                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exampleModal" th:text="#{button.pay}" th:style="'background-color:'+${secondary}+'; border-color: ' +${secondary}+  '; color: white; width: 100%'"></button>
                 <a th:href="${'/clearBasket'}" class="btn" th:text="#{button.clear}"></a>
-                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exampleModal" th:text="#{button.pay}"></button>
+
             </div>
         </div>
 
@@ -67,23 +68,23 @@
                 <div class="modal-body">
                     <form th:action="@{'/payment'}" method="post" class="form-row">
                         <div class="col-12">
-                            <label for="fullname" th:text="#{label.fullName}"></label>
-                            <input type="text" class="form-control" id="fullname" required>
+                            <label for="full_name" th:text="#{label.fullName}"></label>
+                            <input type="text" class="form-control" name="full_name" id="full_name" required>
                         </div>
                         <div class="col-12">
-                            <label for="cardNum" th:text="#{label.cardNum}"></label>
-                            <input type="text" class="form-control" id="cardNum" required>
+                            <label for="card" th:text="#{label.cardNum}"></label>
+                            <input type="text" class="form-control" name="card" id="card" required>
                         </div>
                         <div class="col-6">
                             <label for="exp" th:text="#{label.expiration}"></label>
-                            <input type="text" class="form-control" id="exp" required>
+                            <input type="text" class="form-control" name="expiration" id="exp" required>
                         </div>
                         <div class="col-6">
                             <label for="cvv" th:text="#{label.CVV}">CVV</label>
-                            <input type="text" class="form-control" id="cvv" required>
+                            <input type="text" class="form-control" name="cvv" id="cvv" required>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" th:text="#{button.pay}"></button>
+                            <button type="submit" class="btn" th:style="'background-color:'+${secondary}+'; border-color: ' +${secondary}+  '; color: white;'" th:text="#{button.pay}"></button>
                         </div>
                     </form>
                 </div>

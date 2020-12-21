@@ -15,7 +15,7 @@
                 <tr th:each="brand : ${brands}">
                     <td th:text="${brand.name}"></td>
                     <td width="10%">
-                        <button class="btn btn-primary btn-sm" > Edit</button>
+                        <button class="btn btn-primary btn-sm" th:text="#{button.Edit}"></button>
                     </td>
                 </tr>
                 </tbody>
@@ -28,7 +28,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel" >New brand</h5>
+                        <h5 class="modal-title" id="staticBackdropLabel" th:text="#{label.newBrand}"></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -46,7 +46,7 @@
 
                         </div>
                     </div>
-                    <button class="btn btn-danger btn-sm" > Edit</button>
+                    <button class="btn btn-danger btn-sm" th:text="#{button.Edit}"></button>
                 </div>
             </div>
         </div>
@@ -65,7 +65,7 @@
                     <td th:text="${country.name}"></td>
                     <td width="10%">
                         <button type="button" class="btn btn-primary mt-3" data-toggle="modal" id="addNewBr"
-                                data-target="#staticBackdropCountrySave" data-th-id="${country.id}"> Edit
+                                data-target="#staticBackdropCountrySave" data-th-id="${country.id}" th:text="#{button.Edit}"> Edit
                         </button>
                     </td>
                     <form th:action="@{'/saveCountry'}" method="post">
@@ -74,7 +74,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="staticBackdropLabel" >Save Country</h5>
+                                        <h5 class="modal-title" id="staticBackdropLabel" th:text="#{label.saveCountry }"></h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -111,7 +111,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel" >New Country</h5>
+                        <h5 class="modal-title" id="staticBackdropLabel" th:text="#{label.newCountry}"></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -122,7 +122,7 @@
                             <input type="text" name="country_name" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label>Code</label>
+                            <label th:text="#{label.Code}"></label>
                             <input type="text" name="country_code" class="form-control" required>
                         </div>
                     </div>
